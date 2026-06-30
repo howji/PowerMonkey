@@ -398,7 +398,10 @@ EFI_STATUS EFIAPI ProgramPowerLimits()
   // Power Control
 
   if (pkg->ProgramPowerTweaks) {
-    ProgramPowerCtl(pkg->EnableEETurbo, pkg->EnableRaceToHalt);
+    ProgramPowerCtl(pkg->EnableEETurbo, pkg->EnableRaceToHalt,
+      pkg->EnableBdProchot);
+
+    IaCore_ProgramTvb(pkg->EnableThermalVelocityBoost);
   }
 
 

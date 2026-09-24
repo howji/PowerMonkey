@@ -232,6 +232,10 @@ typedef struct _PACKAGE
   UINT8 ProgramPowerTweaks;        // Enable Programming of PowCtl
   UINT8 EnableEETurbo;              // Enable Energy Efficient Turbo
   UINT8 EnableRaceToHalt;           // Enable Race To Halt
+  UINT8 EnableBdProchot;            // Enable Bi-Directional PROCHOT
+                                    // (MSR_POWER_CONTROL[0])
+  UINT8 EnableThermalVelocityBoost; // Enable Thermal Velocity Boost (TVB)
+                                    // (programmed via OC Mailbox, MSR 0x150)
 
   //
   // MSR PL1/PL2 

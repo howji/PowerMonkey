@@ -808,12 +808,30 @@ VOID EFIAPI SetCTDPLock(const UINT8 lock)
  * ProgramPowerCtl
  ******************************************************************************/
 
-VOID EFIAPI ProgramPowerCtl(const UINT8 eeTurbo, const UINT8 rtHlt)
+VOID EFIAPI ProgramPowerCtl(const UINT8 eeTurbo, const UINT8 rtHlt,
+  const UINT8 bdProchot)
 {
   UINT8 wrt = 0;
   QWORD msr = { 0 };
 
   msr.u64 = pm_rdmsr64(MSR_POWER_CONTROL);
+
+  //////////////////////////
+  // Bi-Directional PROCHOT //
+  //////////////////////////
+
+  if (bdProchot < 2) {
+
+    //
+    // MSR_POWER_CONTROL[0]: 1=BD PROCHOT ENABLED, 0=BD PROCHOT DISABLED
+    // (note: polarity is the inverse of the EET / RTH bits below)
+
+    msr.u32.lo = (bdProchot) ?
+      msr.u32.lo | bit0u32 :
+      msr.u32.lo & ~bit0u32;
+
+    wrt |= 0x1;
+  }
 
   ////////////////////////////
   // Energy Efficient Turbo //

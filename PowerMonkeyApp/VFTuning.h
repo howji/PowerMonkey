@@ -35,6 +35,22 @@
 #define MSR_OC_MAILBOX                  0x150
 #define MSR_FLEX_RATIO                  0x194
 #define MSR_TURBO_RATIO_LIMIT           0x1AD
+
+/*******************************************************************************
+ * OC Mailbox - Thermal Velocity Boost (TVB)
+ *
+ * !!! WARNING - VERIFY BEFORE USE !!!
+ * The OC Mailbox command ID and data-bit layout used to configure TVB are NOT
+ * part of Intel's public documentation - they are taken from FSP UPDs
+ * (TvbRatioClipping / TvbVoltageOptimization) and community reverse-engineering
+ * and MUST be confirmed against your CPU's BWG / FSP before enabling TVB
+ * programming. The OC Mailbox rejects unsupported commands (status is checked),
+ * so a wrong command ID fails gracefully rather than mis-programming the CPU.
+ ******************************************************************************/
+
+#define OC_MBOX_CMD_TVB                 0x14   // <-- VERIFY for your CPU / FSP
+#define OC_TVB_RATIO_CLIPPING_DISABLE   bit0u32  // 1 = disable ratio clipping
+#define OC_TVB_VOLTAGE_OPT_DISABLE      bit1u32  // 1 = disable voltage optim.
 #define MSR_TURBO_RATIO_LIMIT_ECORE     0x650
 #define MSR_POWER_CONTROL               0x1FC
 #define MSR_VR_CURRENT_CONFIG           0x601
@@ -74,3 +90,9 @@ EFI_STATUS EFIAPI IAPERF_ProgramDomainVF(IN const UINT8 domIdx,
  ******************************************************************************/
 
 VOID IaCore_OcLock(VOID);
+
+/*******************************************************************************
+ * IaCore_ProgramTvb
+ ******************************************************************************/
+
+EFI_STATUS EFIAPI IaCore_ProgramTvb(IN const UINT8 enableTvb);

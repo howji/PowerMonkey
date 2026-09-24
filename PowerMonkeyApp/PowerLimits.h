@@ -237,4 +237,5 @@ VOID EFIAPI SetCTDPLock(const UINT8 lock);
  * ProgramPowerCtl
  ******************************************************************************/
 
-VOID EFIAPI ProgramPowerCtl(const UINT8 eeTurbo, const UINT8 rtHlt);
+VOID EFIAPI ProgramPowerCtl(const UINT8 eeTurbo, const UINT8 rtHlt,
+  const UINT8 bdProchot);

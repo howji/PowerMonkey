@@ -453,6 +453,30 @@ VOID ApplyComputerOwnersPolicy(IN PLATFORM* sys)
     pk->EnableRaceToHalt = 1;                  // Race To Halt
                                                // (0=disable, 1=enable)
 
+    pk->EnableBdProchot = 1;                   // Bi-Directional PROCHOT
+                                               // (0=disable, 1=enable)
+                                               // Lets external thermal events
+                                               // (e.g. VRM) throttle the CPU.
+                                               // Keep enabled unless you know
+                                               // exactly why you want it off.
+
+    //
+    // Thermal Velocity Boost (TVB)
+    //
+    // !!! VERIFY BEFORE USING !!!
+    // TVB is programmed via the OC Mailbox (MSR 0x150). The command ID and bit
+    // layout are NOT officially documented - confirm OC_MBOX_CMD_TVB and the
+    // OC_TVB_* bits in VFTuning.h against your CPU's BWG / FSP first. A wrong
+    // command ID is rejected by pcode (fails safely), but verify regardless.
+    //
+    //   1 = TVB enabled  (stock behavior - leaves ratio clipping & voltage
+    //                     optimization active)
+    //   0 = TVB disabled (turns off ratio clipping & voltage optimization,
+    //                     typical for fixed-ratio overclocking)
+
+    pk->EnableThermalVelocityBoost = 1;        // Thermal Velocity Boost
+                                               // (0=disable, 1=enable)
+
     ////////////////////
     /// Power Limits ///
     ////////////////////

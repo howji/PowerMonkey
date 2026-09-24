@@ -362,3 +362,51 @@ VOID IaCore_OcLock(VOID)
     pm_wrmsr64(MSR_FLEX_RATIO, flexRatioMsr.u64);
    }
 }
+
+/*******************************************************************************
+* IaCore_ProgramTvb
+*
+* Configure Intel Thermal Velocity Boost (TVB) through the OC Mailbox
+* (MSR 0x150).
+*
+*   enableTvb = 1 : TVB enabled (stock behavior - ratio clipping and voltage
+*                   optimization left active)
+*   enableTvb = 0 : TVB disabled (ratio clipping and voltage optimization both
+*                   turned off - typical for fixed-ratio overclocking)
+*
+* See the WARNING in VFTuning.h: the command ID (OC_MBOX_CMD_TVB) and the data
+* bit layout (OC_TVB_*) are not officially documented and MUST be verified for
+* your CPU / FSP. Unsupported commands are rejected by pcode, so an incorrect
+* command ID fails safely (EFI_ABORTED) instead of mis-programming the CPU.
+******************************************************************************/
+
+EFI_STATUS EFIAPI IaCore_ProgramTvb(IN const UINT8 enableTvb)
+{
+  CpuMailbox box;
+  UINT32 cmd = 0;
+  UINT32 data = 0;
+
+  OcMailbox_InitializeAsMSR(&box);
+
+  //
+  // "Disable TVB" means asserting both the ratio-clipping and the
+  // voltage-optimization DISABLE bits. "Enable TVB" (stock) leaves them clear.
+
+  if (!enableTvb) {
+    data |= OC_TVB_RATIO_CLIPPING_DISABLE;
+    data |= OC_TVB_VOLTAGE_OPT_DISABLE;
+  }
+
+  cmd = OcMailbox_BuildInterface(OC_MBOX_CMD_TVB, 0, 0);
+
+  MiniTraceEx("Programming TVB: enable=%u, data=0x%x", enableTvb, data);
+
+  if (EFI_ERROR(OcMailbox_ReadWrite(cmd, data, &box))) {
+
+    MiniTraceEx("TVB programming failed, status: 0x%x", box.status);
+
+    return EFI_ABORTED;
+  }
+
+  return EFI_SUCCESS;
+}
